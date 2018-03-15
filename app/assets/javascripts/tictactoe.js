@@ -73,7 +73,7 @@ function saveGame(){
 
   if (!gameId){
     $.post('/games', {state: board}).done(function(response){
-      gameId = response.data['id']
+      gameId = response.data['id'];
     })
   }
   else {
