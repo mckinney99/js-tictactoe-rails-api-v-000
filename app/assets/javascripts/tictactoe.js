@@ -65,25 +65,24 @@ function doTurn(position){
   }
 }
 
-function saveGame(){
-  var board = [];
-  $("td").text((index, square) => {
-    board.push(square);
-  });
+function saveGame() {
+  const $board = $('td').map(function () { return $(this).text(); }).get();
 
-  if (!gameId){
-    $.post('/games', {state: board}).done(function(response){
-      gameId = response.data['id'];
-    })
-  }
-  else {
+  const gameData = { state: $board };
+  if (currentGame) {
     $.ajax({
-      url: `/games/${gameId}`,
-      data: {state: board},
-      type: 'PATCH'
+      type: 'PATCH',
+      url: `/games/${currentGame}`,
+      data: gameData,
+    });
+  } else {
+    const posting = $.post('/games', gameData);
+    posting.done(function (game) {
+      currentGame = game.data.id;
     });
   }
 }
+
 
 function clearBoard(){
   turn = 0
