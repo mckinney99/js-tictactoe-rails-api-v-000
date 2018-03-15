@@ -1,13 +1,13 @@
 var turn = 0;
 var gameId = undefined;
 var winningCombos = [
-  [0, 1, 2], 
-  [3, 4, 5], 
-  [6, 7, 8], 
-  [0, 3, 6], 
-  [1, 4, 7], 
-  [2, 5, 8], 
-  [0, 4, 8], 
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
   [2, 4, 6]
 ]
 
@@ -24,17 +24,17 @@ function player(){
 }
 
 function updateState(position){
-  $(position).text(player());
+  $(position).text(player())
 }
 
 function setMessage(message){
-  $('#message').text(message);
+  $('#message').text(message)
 }
 
 function checkWinner(){
   var board = {};
   $("td").text(function (index, square) {
-    board[index] = square;
+    board[index] = square
   })
 
   return ['X', 'O'].some(function (player){
@@ -42,9 +42,9 @@ function checkWinner(){
       return combo.every(i => board[i] === player)
     })){
       setMessage(`Player ${player} Won!`)
-      return true;
+      return true
     } else {
-      return false;
+      return false
     }
   })
 
@@ -53,8 +53,8 @@ function checkWinner(){
 }
 
 function doTurn(position){
-  updateState(position);
-  turn++;
+  updateState(position)
+  turn++
   if (checkWinner()){
     saveGame();
     clearBoard();
@@ -66,14 +66,14 @@ function doTurn(position){
 }
 
 function saveGame(){
-  var board = [];
+  var board = []
   $("td").text((index, square) => {
     board.push(square);
   });
 
   if (!gameId){
     $.post('/games', {state: board}).done(function(response){
-      gameId = response.data['id'];
+      gameId = response.data['id']
     })
   }
   else {
@@ -86,9 +86,9 @@ function saveGame(){
 }
 
 function clearBoard(){
-  turn = 0;
+  turn = 0
   $('td').empty();
-  gameId = undefined;
+  gameId = undefined
 }
 
 function previousGame(){
@@ -106,7 +106,7 @@ function previousGame(){
         return t != ""
       }).length;
 
-      gameId = response.data.id;
+      gameId = response.data.id
     })
   })
 }
