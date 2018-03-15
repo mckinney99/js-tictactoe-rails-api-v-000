@@ -10,14 +10,14 @@ var winCombos = [
   [2,4,6]
 ];
 
-var currentGame;
+var currentGame
 
 $(function() {
   attachListeners()
 })
 
 function player() {
-  return turn % 2 === 0 ? 'X' : "O"
+  return turn % 2 === 0 ? "X" : "O";
 }
 
 function updateState(square) {
