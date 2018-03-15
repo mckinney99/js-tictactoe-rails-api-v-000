@@ -66,7 +66,7 @@ function doTurn(position){
 }
 
 function saveGame(){
-  var board = []
+  var board = [];
   $("td").text((index, square) => {
     board.push(square);
   });
