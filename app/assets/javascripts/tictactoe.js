@@ -29,19 +29,20 @@ function setMessage(string) {
   $("div#message").text(string)
 }
 
+function checkWinner() {
+  var board = []
+  $("td").text(function(index, square) {
+    board[index] = square
+  })
 
-
-function checkWinner(){
-  var winner = false
-  winningSets = WIN_COMBINATIONS
-  win = winningSets.filter(array => (array[0] === array[1] && array[1] === array[2] && array[2] !== ""))
-  if (win.length !== 0){
-    setMessage(`Player ${win[0][0]} Won!`);
-    return winner = true }
-  return winner
+  for(var combo of WIN_COMBINATIONS) {
+    if (board[combo[0]] == board[combo[1]] && board[combo[1]] == board[combo[2]] && board[combo[0]] !== "") {
+      setMessage("Player " + board[combo[0]] + " Won!")
+      return true
+    }
+  }
+  return false
 }
-
-
 
 function resetBoard() {
   $("td").empty();
