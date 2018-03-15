@@ -1,122 +1,164 @@
 var turn = 0;
-var gameId = undefined;
-var winningCombos = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6]
-]
+var winCombos = [[0,1,2], [3,4,5], [6,7,8], [0,3,6],
+[1,4,7], [2,5,8], [0,4,8], [2,4,6]];
+var currentGame;
 
-$(document).ready(function() {
+
+//attachListeners must be invoked inside
+$(function() {
   attachListeners()
 })
 
-function player(){
-  if (this.turn % 2 === 0) {
-    return "X";
-  } else {
-    return "O";
-  }
+
+//Returns token of player whose turn is x when even and o when odd
+function player() {
+  return turn % 2 === 0 ? 'X' : "O"
 }
 
-function updateState(position){
-  $(position).text(player())
+
+//invokes player() and adds returned string x or o to clicked square on board
+function updateState(square) {
+  square.innerHTML = player()
 }
 
-function setMessage(message){
-  $('#message').text(message)
+// accepts a string and adds it to the div#message element in DOM
+
+function setMessage(message) {
+  $('div#message').html(message)
 }
 
-function checkWinner(){
-  var board = {};
-  $("td").text(function (index, square) {
-    board[index] = square
-  })
 
-  return ['X', 'O'].some(function (player){
-    if (winningCombos.some(function (combo) {
-      return combo.every(i => board[i] === player)
-    })){
-      setMessage(`Player ${player} Won!`)
-      return true
+//Returns true if board contains any winning combinations otherwise false
+//if won pass the appropriate string 'Player X Won!' or 'Player O Won!'
+
+function checkWinner() {
+  // search through board and get elements
+  let board = $('td').map(function(){
+    return $(this).text()
+  }).get()
+  // detect the first winner
+ winCombos.find((win) => {
+    if (board[win[0]] === board[win[1]] && board[win[1]] === board[win[2]] && board[win[0]] !== "" && board[win[0]] !== undefined) {
+      //winner message
+      setMessage(`Player ${board[win[0]]} Won!`)
+      return winner = true
+
     } else {
-      return false
+      return winner = false
     }
   })
-
-  winningCombos.some(function (checkCombos){
-  })
+  return winner
 }
 
-function doTurn(position){
-  updateState(position)
+// increment the turn by 1
+// invoke updateState() passing it the element that was clicked
+// invoke checkWinner() to determine whether the move results in winning play [?]
+
+function doTurn(square) {
+  updateState(square)
   turn++
-  if (checkWinner()){
-    saveGame();
-    clearBoard();
+  if (checkWinner()) {
+    saveGame()
+    clearGame()
   } else if (turn === 9) {
-    setMessage('Tie game.');
-    saveGame();
-    clearBoard();
-  }
-}
-
-function saveGame() {
-  const $board = $('td').map(function () { return $(this).text(); }).get();
-
-  const gameData = { state: $board };
-  if (currentGame) {
-    $.ajax({
-      type: 'PATCH',
-      url: `/games/${currentGame}`,
-      data: gameData,
-    });
-  } else {
-    const posting = $.post('/games', gameData);
-    posting.done(function (game) {
-      currentGame = game.data.id;
-    });
+      setMessage("Tie game.")
+      saveGame()
+      clearGame()
   }
 }
 
 
-function clearBoard(){
-  turn = 0
-  $('td').empty();
-  gameId = undefined
-}
+//Attaches event listeners to squares of game board and button#save/previous/clear
+//When user clicks on square e.listener invokes doTurn and pass it to element clicked []
 
-function previousGame(){
-  $.get('/games').done(function(response){
-    var buttons = response.data.map(game => `<button>${game["id"]}</button>`);
-    $('#games').html(buttons)
-  })
-  $('#games').on('click', function(event){
-    $.get(`/games/${event.target.innerHTML}`).done(function (response){
-      var state = response.data.attributes.state
-      $('td').each(function(i, td){
-        td.innerHTML = state[i]
-      })
-      turn = state.filter(function(t){
-        return t != ""
-      }).length;
-
-      gameId = response.data.id
-    })
-  })
-}
-
-function attachListeners(){
+function attachListeners() {
   $('td').on('click', function() {
-    if (!$.text(this) && !checkWinner()){
+    if ($(this).text() === '' && !checkWinner()) {
       doTurn(this)
     }
-  });
-  $('#save').on('click', function() {saveGame()})
-  $('#previous').on('click', function() {previousGame()})
-  $('#clear').on('click', function() {clearBoard()})
+  })
+  //set the buttons as functions
+
+  $('#save').on('click', () => saveGame())
+  $('#previous').on('click', () => showPreviousGames())
+  $('#clear').on('click', () => clearGame())
+}
+
+
+//Save current game state
+//If game is already in database/update instead[]
+//Game can be saved if blank[]
+
+function saveGame() {
+ let boardState = $('td').map(function(){
+     return $(this).text()
+  }).get()
+  //get state data and put in variable here ""
+  data = {state: boardState}
+
+  if (currentGame) {
+    $.ajax({
+      type: "PATCH",
+      url: `/games/${currentGame}`,
+      data: data
+    })
+
+  } else {
+    $.ajax({
+      type: "POST",
+      url: '/games',
+      data: data,
+      success: function(game) {
+        currentGame = game.data.id
+        $('#games').append(`<button id='gameid-${game.data.id}'>${game.data.id}</button>`)
+        $(`#gameid-${game.data.id}`).on('click', () => reloadGame(game.data.id))
+      }
+    })
+  }
+}
+
+
+//Grabs all persisted games from DB and create a button for each
+//All buttons should be added to the div#games element []
+
+function showPreviousGames() {
+  //clear current game
+  $('#games').empty()
+  //hijack the route
+  $.get('/games', function(games){
+    if (games['data'].length > 0) {
+      games['data'].forEach(previousGamesButton)
+    }
+  })
+}
+
+//Separate button out from showPreviousGames function
+function previousGamesButton(game) {
+  $('#games').append(`<button id='gameid-${game.id}'>${game.id}</button>`)
+  $(`#gameid-${game.id}`).on('click', () => reloadGame(game.id))
+}
+
+function reloadGame(gameId){
+  $.get(`/games/${gameId}`, function(game){
+    currentGame = game.data.id
+    const state = game.data.attributes.state
+    turn  = state.filter((e) => e!=='').length
+    let index = 0
+    for (let y = 0; y < 3; y++) {
+      for (let x = 0; x < 3; x++){
+
+        $(`td[data-x='${x}'][data-y='${y}']`).html(state[index])
+        index++
+      }
+    }
+  })
+}
+
+//Clears the board and starts a new game
+function clearGame() {
+  //set turn to 0 and currentGame
+  turn = 0;
+  currentGame = undefined;
+// set board to ''
+  $('td').empty();
 }
