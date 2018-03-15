@@ -13,7 +13,7 @@ var turn = 0
 var currentGame = 0
 
 function player() {
-  if (turn % 2) {
+  if (turn % 2 === 0) {
     return "X"
   } else {
     return "O"
