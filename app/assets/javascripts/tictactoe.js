@@ -58,7 +58,7 @@ function doTurn(cell) {
   if (checkWinner()) {
     saveGame();
     resetBoard();
-  } else if (turn === 8) {
+  } else if (turn === 9) {
     setMessage("Tie game.");
     saveGame();
     resetBoard();
