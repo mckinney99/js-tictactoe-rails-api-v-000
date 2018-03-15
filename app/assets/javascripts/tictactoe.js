@@ -1,68 +1,47 @@
 var turn = 0;
 var winCombos = [
-  [0,1,2], 
-  [3,4,5], 
-  [6,7,8], 
+  [0,1,2],
+  [3,4,5],
+  [6,7,8],
   [0,3,6],
-  [1,4,7], 
-  [2,5,8], 
-  [0,4,8], 
+  [1,4,7],
+  [2,5,8],
+  [0,4,8],
   [2,4,6]
 ];
 
 var currentGame;
 
-
-//attachListeners must be invoked inside
 $(function() {
   attachListeners()
 })
 
-
-//Returns token of player whose turn is x when even and o when odd
 function player() {
   return turn % 2 === 0 ? 'X' : "O"
 }
 
-
-//invokes player() and adds returned string x or o to clicked square on board
 function updateState(square) {
   square.innerHTML = player()
 }
-
-// accepts a string and adds it to the div#message element in DOM
 
 function setMessage(message) {
   $('div#message').html(message)
 }
 
-
-//Returns true if board contains any winning combinations otherwise false
-//if won pass the appropriate string 'Player X Won!' or 'Player O Won!'
-
 function checkWinner() {
-  // search through board and get elements
   let board = $('td').map(function(){
     return $(this).text()
   }).get()
-  // detect the first winner
  winCombos.find((win) => {
     if (board[win[0]] === board[win[1]] && board[win[1]] === board[win[2]] && board[win[0]] !== "" && board[win[0]] !== undefined) {
-      //winner message
       setMessage(`Player ${board[win[0]]} Won!`)
       return winner = true
-
     } else {
       return winner = false
     }
   })
   return winner
 }
-
-// increment the turn by 1
-// invoke updateState() passing it the element that was clicked
-// invoke checkWinner() to determine whether the move results in winning play [?]
-
 function doTurn(square) {
   updateState(square)
   turn++
