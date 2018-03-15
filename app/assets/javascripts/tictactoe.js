@@ -42,6 +42,7 @@ function checkWinner() {
   })
   return winner
 }
+
 function doTurn(square) {
   updateState(square)
   turn++
@@ -55,33 +56,22 @@ function doTurn(square) {
   }
 }
 
-
-//Attaches event listeners to squares of game board and button#save/previous/clear
-//When user clicks on square e.listener invokes doTurn and pass it to element clicked []
-
 function attachListeners() {
   $('td').on('click', function() {
     if ($(this).text() === '' && !checkWinner()) {
       doTurn(this)
     }
   })
-  //set the buttons as functions
 
   $('#save').on('click', () => saveGame())
   $('#previous').on('click', () => showPreviousGames())
   $('#clear').on('click', () => clearGame())
 }
 
-
-//Save current game state
-//If game is already in database/update instead[]
-//Game can be saved if blank[]
-
 function saveGame() {
  let boardState = $('td').map(function(){
      return $(this).text()
   }).get()
-  //get state data and put in variable here ""
   data = {state: boardState}
 
   if (currentGame) {
@@ -105,14 +95,8 @@ function saveGame() {
   }
 }
 
-
-//Grabs all persisted games from DB and create a button for each
-//All buttons should be added to the div#games element []
-
 function showPreviousGames() {
-  //clear current game
   $('#games').empty()
-  //hijack the route
   $.get('/games', function(games){
     if (games['data'].length > 0) {
       games['data'].forEach(previousGamesButton)
@@ -120,7 +104,6 @@ function showPreviousGames() {
   })
 }
 
-//Separate button out from showPreviousGames function
 function previousGamesButton(game) {
   $('#games').append(`<button id='gameid-${game.id}'>${game.id}</button>`)
   $(`#gameid-${game.id}`).on('click', () => reloadGame(game.id))
@@ -142,11 +125,8 @@ function reloadGame(gameId){
   })
 }
 
-//Clears the board and starts a new game
 function clearGame() {
-  //set turn to 0 and currentGame
   turn = 0;
   currentGame = undefined;
-// set board to ''
   $('td').empty();
 }
