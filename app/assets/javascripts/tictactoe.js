@@ -1,5 +1,3 @@
-var turn = 0;
-var currentGame = 0;
 var WIN_COMBINATIONS = [
   [0, 1, 2],
   [3, 4, 5],
@@ -10,6 +8,9 @@ var WIN_COMBINATIONS = [
   [0, 4, 8],
   [6, 4, 2]
 ]
+
+var turn = 0
+var currentGame = 0
 
 function player() {
   if (turn % 2 === 0) {
