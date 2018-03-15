@@ -46,7 +46,7 @@ function checkWinner() {
 
 function checkWinner(){
   var winner = false
-  winningSets = getWinningSets()
+  winningSets = WIN_COMBINATIONS
   win = winningSets.filter(array => (array[0] === array[1] && array[1] === array[2] && array[2] !== ""))
   if (win.length !== 0){
     setMessage(`Player ${win[0][0]} Won!`);
