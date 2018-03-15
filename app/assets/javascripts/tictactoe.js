@@ -14,34 +14,34 @@ var currentGame = 0
 
 function player() {
   if (turn % 2 === 0) {
-    return "X";
+    return "X"
   } else {
-    return "O";
+    return "O"
   }
 }
 
 function updateState(cell) {
-  var token = player();
-  $(cell).text(token);
+  var token = player()
+  $(cell).text(token)
 }
 
 function setMessage(string) {
-  $("div#message").text(string);
+  $("div#message").text(string)
 }
 
 function checkWinner() {
   var board = []
   $("td").text(function(index, square) {
-    board[index] = square;
-  });
+    board[index] = square
+  })
 
   for(var combo of WIN_COMBINATIONS) {
     if (board[combo[0]] == board[combo[1]] && board[combo[1]] == board[combo[2]] && board[combo[0]] !== "") {
-      setMessage("Player " + board[combo[0]] + " Won!");
-      return true;
+      setMessage("Player " + board[combo[0]] + " Won!")
+      return true
     }
   }
-  return false;
+  return false
 }
 
 function resetBoard() {
@@ -52,13 +52,13 @@ function resetBoard() {
 
 function doTurn(cell) {
   if (cell.textContent === "") {
-    updateState(cell);
+    updateState(cell)
     turn += 1;
   }
   if (checkWinner()) {
     saveGame();
     resetBoard();
-  } else if (turn === 9) {
+  } else if (turn === 8) {
     setMessage("Tie game.");
     saveGame();
     resetBoard();
@@ -66,11 +66,11 @@ function doTurn(cell) {
 }
 
 function saveGame() {
-  var state = [];
-  var gameData;
+  var state = []
+  var gameData
 
   $("td").text(function(index, square) {
-    state.push(square);
+    state.push(square)
   });
 
   gameData = { state: state };
